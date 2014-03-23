@@ -10,3 +10,12 @@ target/
 
 # MacOS
 .DS_Store
+
+# node.js
+node_modules/
+
+# IntelliJ
+*.iml
+
+# Raw .css
+*.css
