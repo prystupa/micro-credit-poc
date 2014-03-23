@@ -5,5 +5,8 @@
 *.war
 *.ear
 
-# Mavne
+# Maven
 target/
+
+# MacOS
+.DS_Store
