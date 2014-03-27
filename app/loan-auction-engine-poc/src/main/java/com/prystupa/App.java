@@ -1,5 +1,6 @@
 package com.prystupa;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 
 /**
@@ -9,8 +10,7 @@ public class App {
     public static void main(String[] args) throws InterruptedException {
         ActorSystem system = ActorSystem.create("Hello");
 
-//        final ActorRef script = system.actorOf(TestScript.props());
-        system.actorOf(IncomingMessageGateway.props(), "messagingInputGateway");
-//        final ActorRef outputGateway = system.actorOf(OutgoingMessageGateway.props(), "outgoingMessagingGateway");
+        final ActorRef outputGateway = system.actorOf(OutgoingMessageGateway.props(), "outgoingMessagingGateway");
+        system.actorOf(IncomingMessageGateway.props(outputGateway, EchoService.props()), "incomingMessagingGateway");
     }
 }
