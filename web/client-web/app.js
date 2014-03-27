@@ -25,9 +25,9 @@ app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
 
-app.use(auth);
+app.use(auth.checkAndLogin);
 
-
+app.get('/logout', auth.logout);
 app.get('/username', function (req, res) {
     var user = req.session.user;
     res.end(user);

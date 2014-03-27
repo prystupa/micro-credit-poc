@@ -5,18 +5,18 @@
  * Time: 11:37 PM
  */
 
+var logger = require('winston').loggers.get('auth');
 var request = require('request');
 var querystring = require('querystring');
 
-module.exports = function (req, res, next) {
+var cas_host = "https://localhost:8443";
+var opt_service = "https://localhost:3443";
 
-    console.log(req.url);
-
-    var cas_host = "https://localhost:8443";
-    var opt_service = "https://localhost:3443";
+function checkAndLogin(req, res, next) {
+    logger.debug('Checking auth for %s', req.originalUrl);
 
     function validate(ticket) {
-        console.log('validating SSO');
+        logger.debug('Validating ticket', {ticket: ticket});
 
         var validateService = "/cas/serviceValidate";
         var query = {'service': opt_service, 'ticket': ticket};
@@ -26,8 +26,6 @@ module.exports = function (req, res, next) {
 
         request({url: ssoUrl}, function (error, response, body) {
 
-            console.log(body);
-
             req.session.user = /<cas:user>(.*)<\/cas:user>/.exec(body)[1];
             req.session.ticket = ticket;
             res.writeHead(307, {location: 'https://localhost:3443'});
@@ -36,13 +34,13 @@ module.exports = function (req, res, next) {
     }
 
     function redirect() {
-        console.log('redirecting to SSO');
+        logger.debug('Redirecting to SSO');
 
         var login_service = "/cas/login";
-        var queryopts = {'service': opt_service};
+        var query = {'service': opt_service};
         var ssoUrl = cas_host + login_service
             + '?'
-            + querystring.stringify(queryopts);
+            + querystring.stringify(query);
 
         res.writeHead(307, { 'location': ssoUrl });
         return res.end();
@@ -54,4 +52,20 @@ module.exports = function (req, res, next) {
     var sessionTicket = req.session.ticket;
     if (!sessionTicket) return redirect();
     return next();
+}
+
+function logout(req, res) {
+
+    var logoutService = "/cas/logout";
+    var ssoUrl = cas_host + logoutService;
+
+    req.session.destroy();
+
+    res.writeHead(307, { 'location': ssoUrl });
+    return res.end();
+}
+
+module.exports = {
+    checkAndLogin: checkAndLogin,
+    logout: logout
 };
