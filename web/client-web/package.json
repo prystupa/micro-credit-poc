@@ -1,13 +1,13 @@
 {
-    "name": "client-web",
-    "version": "0.0.1",
-    "private": true,
-    "scripts": {
-        "start": "node app.js"
-    },
-    "dependencies": {
-        "express": "3.5.0",
-        "stylus": "*",
-        "cas_validate": "~0.1.9"
-    }
+  "name": "client-web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.5.0",
+    "stylus": "*",
+    "request": "~2.34.0"
+  }
 }
