@@ -10,6 +10,7 @@ var fs = require('fs');
 
 var app = express();
 var auth = require('./auth');
+var amqp = require('amqp');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -33,7 +34,16 @@ app.get('/username', function (req, res) {
 });
 
 app.get('/echo/:input', function (req, res) {
-    res.end(req.params.input);
+
+    var conn = amqp.createConnection();
+    conn.on('ready', function () {
+        conn.exchange('input', {passive: true, confirm: true}, function (exchange) {
+            var input = req.params.input;
+            exchange.publish('input', {input: input}, {}, function (result) {
+                res.end(req.params.input);
+            });
+        });
+    });
 });
 
 app.use(app.router);

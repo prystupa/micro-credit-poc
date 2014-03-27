@@ -27,6 +27,6 @@ public class IncomingMessageGateway extends UntypedConsumerActor {
 
     @Override
     public String getEndpointUri() {
-        return "rabbitmq://localhost:5672/input?username=guest&password=guest&queue=requests&routingKey=B";
+        return "rabbitmq://localhost:5672/input?username=guest&password=guest&queue=requests&routingKey=input";
     }
 }
