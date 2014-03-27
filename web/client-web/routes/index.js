@@ -13,7 +13,7 @@ exports.echo = function (req, res) {
                 });
 
                 var input = req.params.input;
-                exchange.publish('input', {input: input}, {replyTo: queue.name}, function () {
+                exchange.publish('input', {input: input}, {replyTo: queue.name, headers: {ticket: req.session.ticket}}, function () {
                     logger.debug('Published request: %s', input);
                 });
             });
