@@ -9,8 +9,7 @@ var path = require('path');
 var fs = require('fs');
 
 var app = express();
-var querystring = require('querystring');
-var request = require('request');
+var auth = require('./auth');
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -25,53 +24,7 @@ app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
 
-app.use(function (req, res, next) {
-
-    console.log(req.url);
-
-    var cas_host = "https://localhost:8443";
-    var opt_service = "https://localhost:3443";
-
-    function validate(ticket) {
-        console.log('validating SSO');
-
-        var validateService = "/cas/serviceValidate";
-        var query = {'service': opt_service, 'ticket': ticket};
-        var ssoUrl = cas_host + validateService
-            + '?'
-            + querystring.stringify(query);
-
-        request({url: ssoUrl}, function (error, response, body) {
-
-            console.log(body);
-
-            req.session.user = /<cas:user>(.*)<\/cas:user>/.exec(body)[1];
-            req.session.ticket = ticket;
-            res.writeHead(307, {location: 'https://localhost:3443'});
-            return res.end();
-        });
-    }
-
-    function redirect() {
-        console.log('redirecting to SSO');
-
-        var login_service = "/cas/login";
-        var queryopts = {'service': opt_service};
-        var ssoUrl = cas_host + login_service
-            + '?'
-            + querystring.stringify(queryopts);
-
-        res.writeHead(307, { 'location': ssoUrl });
-        return res.end();
-    }
-
-    var ticket = req.param('ticket');
-    if (ticket) return validate(ticket);
-
-    var sessionTicket = req.session.ticket;
-    if (!sessionTicket) return redirect();
-    return next();
-});
+app.use(auth);
 
 
 app.get('/username', function (req, res) {
