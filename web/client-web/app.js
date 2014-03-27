@@ -32,6 +32,10 @@ app.get('/username', function (req, res) {
     res.end(user);
 });
 
+app.get('/echo/:input', function (req, res) {
+    res.end(req.params.input);
+});
+
 app.use(app.router);
 app.use(require('stylus').middleware(path.join(__dirname, 'public')));
 
