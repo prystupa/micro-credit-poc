@@ -12,6 +12,18 @@ var querystring = require('querystring');
 var cas_host = "https://localhost:8443";
 var opt_service = "https://localhost:3443";
 
+var pgtCache = {};
+
+function proxyAuth(req, res) {
+    var pgtId = req.param('pgtId');
+    var pgtIou = req.param('pgtIou');
+
+    if (pgtIou) {
+        pgtCache[pgtIou] = pgtId;
+    }
+    res.end();
+}
+
 function checkAndLogin(req, res, next) {
     logger.debug('Checking auth for %s', req.originalUrl);
 
@@ -19,16 +31,25 @@ function checkAndLogin(req, res, next) {
         logger.debug('Validating ticket', {ticket: ticket});
 
         var validateService = "/cas/serviceValidate";
-        var query = {'service': opt_service, 'ticket': ticket};
+        var query = {
+            service: opt_service,
+            ticket: ticket,
+            pgtUrl: opt_service + '/proxyAuth'
+        };
         var ssoUrl = cas_host + validateService
             + '?'
             + querystring.stringify(query);
 
         request({url: ssoUrl}, function (error, response, body) {
 
+            var pgtIOU = /<cas:proxyGrantingTicket>(.*)<\/cas:proxyGrantingTicket>/.exec(body)[1];
             req.session.user = /<cas:user>(.*)<\/cas:user>/.exec(body)[1];
             req.session.ticket = ticket;
-            res.writeHead(307, {location: 'https://localhost:3443'});
+
+            req.session.pgtId = pgtCache[pgtIOU];
+            delete pgtCache[pgtIOU];
+
+            res.writeHead(307, {location: opt_service});
             return res.end();
         });
     }
@@ -66,6 +87,7 @@ function logout(req, res) {
 }
 
 module.exports = {
+    proxyAuth: proxyAuth,
     checkAndLogin: checkAndLogin,
     logout: logout
 };

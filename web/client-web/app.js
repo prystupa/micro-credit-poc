@@ -25,6 +25,7 @@ app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
 
+app.use('/proxyAuth', auth.proxyAuth);
 app.use(auth.checkAndLogin);
 
 app.get('/logout', auth.logout);
@@ -51,8 +52,8 @@ http.createServer(app).listen(app.get('port'), function () {
 
 // This line is from the Node.js HTTPS documentation.
 var options = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
+    key: fs.readFileSync('../../certs/key.pem'),
+    cert: fs.readFileSync('../../certs/localhost.pem')
 };
 // Create an HTTPS service identical to the HTTP service.
 https.createServer(options, app).listen(3443, function () {
