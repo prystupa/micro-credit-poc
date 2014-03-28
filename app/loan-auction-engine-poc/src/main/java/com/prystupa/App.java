@@ -11,6 +11,6 @@ public class App {
         ActorSystem system = ActorSystem.create("Hello");
 
         final ActorRef outputGateway = system.actorOf(OutgoingMessageGateway.props(), "outgoingMessagingGateway");
-        system.actorOf(IncomingMessageGateway.props(outputGateway, EchoService.props()), "incomingMessagingGateway");
+        system.actorOf(IncomingMessageGateway.props(outputGateway, ValidatorFilter.props(EchoService.props())), "incomingMessagingGateway");
     }
 }

@@ -40,7 +40,7 @@ public class IncomingMessageGateway extends UntypedConsumerActor {
         if (message instanceof CamelMessage) {
             CamelMessage camelMessage = (CamelMessage) message;
             ActorRef service = context().actorOf(serviceProps);
-            service.tell(camelMessage.body(), replyHandler(camelMessage.getHeaders()));
+            service.tell(camelMessage, replyHandler(camelMessage.getHeaders()));
         } else {
             unhandled(message);
         }

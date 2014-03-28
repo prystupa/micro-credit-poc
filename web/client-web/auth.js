@@ -24,6 +24,25 @@ function proxyAuth(req, res) {
     res.end();
 }
 
+function acquireProxyTicket(req, cb) {
+    logger.debug('Acquiring proxy ticket for %s', req.originalUrl);
+
+    var pgtId = req.session.pgtId;
+    var proxyService = '/cas/proxy';
+    var query = {
+        pgt: pgtId,
+        targetService: 'backend'
+    };
+    var ssoUrl = cas_host + proxyService
+        + '?'
+        + querystring.stringify(query);
+
+    request({url: ssoUrl}, function (error, response, body) {
+        var proxyTicket = /<cas:proxyTicket>(.*)<\/cas:proxyTicket>/.exec(body)[1];
+        cb(error, proxyTicket);
+    });
+}
+
 function checkAndLogin(req, res, next) {
     logger.debug('Checking auth for %s', req.originalUrl);
 
@@ -88,6 +107,7 @@ function logout(req, res) {
 
 module.exports = {
     proxyAuth: proxyAuth,
+    acquireProxyTicket: acquireProxyTicket,
     checkAndLogin: checkAndLogin,
     logout: logout
 };
