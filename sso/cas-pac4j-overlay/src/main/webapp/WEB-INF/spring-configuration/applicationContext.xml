@@ -40,32 +40,11 @@
         <property name="fields" value="name" />
     </bean>
 
-    <bean id="twitter1" class="org.pac4j.oauth.client.TwitterClient">
-        <property name="key" value="OPEWaSoTuAe49K4dSoRvNw" />
-        <property name="secret" value="aKmvleltXAmLKcnlMgzRjTsCnhV3QVMVDh153xJttCo" />
-    </bean>
-
-    <bean id="caswrapper1" class="org.pac4j.oauth.client.CasOAuthWrapperClient">
-        <property name="key" value="this_is_the_key" />
-        <property name="secret" value="this_is_the_secret" />
-        <property name="casOAuthUrl" value="http://localhost:8080/cas2/oauth2.0" />
-    </bean>
-
-    <bean id="cas1" class="org.pac4j.cas.client.CasClient">
-        <property name="casLoginUrl" value="http://localhost:8080/cas2/login" />
-        <!-- property name="casProtocol">
-            <util:constant static-field="org.pac4j.cas.client.CasClient.CasProtocol.SAML" />
-        </property-->
-    </bean>
-
     <bean id="clients" class="org.pac4j.core.client.Clients">
         <property name="callbackUrl" value="https://localhost:8443/cas/login" />
         <property name="clients">
             <list>
                 <ref bean="facebook1" />
-                <ref bean="twitter1" />
-                <ref bean="caswrapper1" />
-                <ref bean="cas1" />
             </list>
         </property>
     </bean>
@@ -158,7 +137,7 @@
           p:httpClient-ref="httpClient"
           p:uniqueTicketIdGenerator-ref="proxy20TicketUniqueIdGenerator"/>
 
-    <!-- ADVISORS -->
+    <!-- Advisors -->
     <bean id="advisorAutoProxyCreator"
           class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 

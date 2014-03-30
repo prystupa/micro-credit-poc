@@ -68,7 +68,9 @@
                         <input class="btn-reset" name="reset" accesskey="c" value="<spring:message code="screen.welcome.button.clear" />" tabindex="5" type="reset" />
                     </div>
             </form:form>
-          </div>
+      <a href="${FacebookClientUrl}">Authenticate with Facebook</a>
+
+  </div>
             <div id="sidebar">
 				<div class="sidebar-content">
                 <p class="fl-panel fl-note fl-bevel-white fl-font-size-80"><spring:message code="screen.welcome.security" /></p>
@@ -139,13 +141,3 @@
 				</div>
             </div>
 <jsp:directive.include file="includes/bottom.jsp" />
-
-
-<a href="${FacebookClientUrl}">Authenticate with Facebook</a> <br />
-<br />      
-<a href="${TwitterClientUrl}">Authenticate with Twitter</a><br />
-<br />
-<a href="${CasOAuthWrapperClientUrl}">Authenticate with another CAS server using OAuth v2.0 protocol</a><br />  
-<br />
-<a href="${CasClientUrl}">Authenticate with another CAS server using CAS protocol</a><br />  
-<br />
