@@ -23,16 +23,53 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xmlns:c="http://www.springframework.org/schema/c"
-       xmlns:util="http://www.springframework.org/schema/util"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
-        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
     <description>
         This is the main Spring configuration file with some of the main "core" classes defined. You shouldn't really
         modify this unless you
         know what you're doing!
     </description>
+    
+    <!-- #DEMO# -->
+    <bean id="facebook1" class="org.pac4j.oauth.client.FacebookClient">
+        <property name="key" value="525355334249885" />
+        <property name="secret" value="3318f26eaa36cb0e3357d81589f131ca" />
+        <property name="scope" value="email" />
+        <property name="fields" value="name" />
+    </bean>
+
+    <bean id="twitter1" class="org.pac4j.oauth.client.TwitterClient">
+        <property name="key" value="OPEWaSoTuAe49K4dSoRvNw" />
+        <property name="secret" value="aKmvleltXAmLKcnlMgzRjTsCnhV3QVMVDh153xJttCo" />
+    </bean>
+
+    <bean id="caswrapper1" class="org.pac4j.oauth.client.CasOAuthWrapperClient">
+        <property name="key" value="this_is_the_key" />
+        <property name="secret" value="this_is_the_secret" />
+        <property name="casOAuthUrl" value="http://localhost:8080/cas2/oauth2.0" />
+    </bean>
+
+    <bean id="cas1" class="org.pac4j.cas.client.CasClient">
+        <property name="casLoginUrl" value="http://localhost:8080/cas2/login" />
+        <!-- property name="casProtocol">
+            <util:constant static-field="org.pac4j.cas.client.CasClient.CasProtocol.SAML" />
+        </property-->
+    </bean>
+
+    <bean id="clients" class="org.pac4j.core.client.Clients">
+        <property name="callbackUrl" value="https://localhost:8443/cas/login" />
+        <property name="clients">
+            <list>
+                <ref bean="facebook1" />
+                <ref bean="twitter1" />
+                <ref bean="caswrapper1" />
+                <ref bean="cas1" />
+            </list>
+        </property>
+    </bean>
+    <!-- #DEMO# -->
 
     <!--
       Including this aspectj-autoproxy element will cause spring to automatically
@@ -59,15 +96,9 @@
         Also, explicitly set the default encoding to be UTF-8 when parsing message bundles.
         The default, if not set, is none which forces ISO-8859-1 of java.util.ResourceBundle.
     -->
-    <bean id="messageSource" class="org.jasig.cas.web.view.CasReloadableMessageBundle"
-          p:basenames-ref="basenames" p:fallbackToSystemLocale="false" p:defaultEncoding="UTF-8"
-          p:cacheSeconds="180" p:useCodeAsDefaultMessage="true" />
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basename="classpath:messages" p:fallbackToSystemLocale="false" p:defaultEncoding="UTF-8" p:cacheSeconds="180" />
 
-    <util:list id="basenames">
-        <value>classpath:custom_messages</value>
-        <value>classpath:messages</value>
-    </util:list>
-    
     <bean id="servicesManager" class="org.jasig.cas.services.DefaultServicesManagerImpl"
         c:serviceRegistryDao-ref="serviceRegistryDao" />
 
@@ -104,7 +135,7 @@
           p:disableSingleSignOut="${slo.callbacks.disabled:false}" />
 
     <bean id="logoutBuilder" class="org.jasig.cas.logout.SamlCompliantLogoutMessageCreator" />
-    
+
     <!-- CentralAuthenticationService -->
     <bean id="centralAuthenticationService" class="org.jasig.cas.CentralAuthenticationServiceImpl">
         <constructor-arg index="0" ref="ticketRegistry"/>
