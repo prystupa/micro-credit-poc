@@ -18,7 +18,11 @@ exports.echo = function (req, res) {
                     logger.debug('AMQP queue is ready: %s', queue.name);
 
                     queue.subscribe(function (message) {
-                        res.end(message.data.toString());
+                        var reply = message.data.toString();
+                        logger.debug('Received reply %s, disconnecting from AMQP', reply);
+
+                        conn.disconnect();
+                        res.end(reply);
                     });
 
                     var input = req.params.input;

@@ -61,6 +61,8 @@ function checkAndLogin(req, res, next) {
 
         request({url: ssoUrl}, function (error, response, body) {
 
+            logger.debug('SSO validation response: %s', body);
+
             var pgtIOU = /<cas:proxyGrantingTicket>(.*)<\/cas:proxyGrantingTicket>/.exec(body)[1];
             req.session.user = /<cas:user>(.*)<\/cas:user>/.exec(body)[1];
             req.session.ticket = ticket;
